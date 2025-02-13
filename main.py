@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Query
 import firebase_admin
 from firebase_admin import credentials, firestore
 import random
@@ -9,7 +9,7 @@ import os
 
 
 # 로컬용 Firebase 초기화
-# cred = credentials.Certificate("./admin.json")
+# cred = credentials.Certificate("./firekeys/admin.json")
 # firebase_admin.initialize_app(cred)
 # db = firestore.client()
 
@@ -108,4 +108,14 @@ def search_keys(keyword: str):
         key_data = key.to_dict()
         if any(keyword.lower() in str(value).lower() for value in key_data.values()):
             results.append({"serial_key": key.id, **key_data})
+    return results
+
+# 시리얼키로 업체 조회
+@app.get("/validate_serial")
+def validate_serial(serial: str = Query(..., description="검증할 시리얼키 입력")):
+    """정확한 형식의 시리얼키 검색"""
+    keys_ref = db.collection("serial_keys").where("serial_key", "==", serial).stream()
+    results = [{"serial_key": key.id, **key.to_dict()} for key in keys_ref]
+    if not results:
+        raise HTTPException(status_code=404, detail="시리얼키가 유효하지 않습니다.")
     return results
