@@ -4,11 +4,19 @@ from firebase_admin import credentials, firestore
 import random
 import string
 from datetime import datetime, timedelta
+import json
+import os
 
-# Firebase 초기화
-cred = credentials.Certificate("./admin.json")
+
+# 로컬용 Firebase 초기화
+# cred = credentials.Certificate("./admin.json")
+# firebase_admin.initialize_app(cred)
+# db = firestore.client()
+
+# 배포용 Firebase 초기화
+firebase_credentials = json.loads(os.getenv("FIREBASE_CREDENTIALS"))
+cred = credentials.Certificate(firebase_credentials)
 firebase_admin.initialize_app(cred)
-db = firestore.client()
 
 app = FastAPI()
 
