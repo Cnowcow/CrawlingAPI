@@ -17,6 +17,7 @@ import os
 firebase_credentials = json.loads(os.getenv("FIREBASE_CREDENTIALS"))
 cred = credentials.Certificate(firebase_credentials)
 firebase_admin.initialize_app(cred)
+db = firestore.client()
 
 app = FastAPI()
 
