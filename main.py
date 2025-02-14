@@ -6,6 +6,7 @@ import string
 from datetime import datetime, timedelta
 import json
 import os
+from fastapi.middleware.cors import CORSMiddleware
 
 
 # 로컬용 Firebase 초기화
@@ -20,6 +21,14 @@ firebase_admin.initialize_app(cred)
 db = firestore.client()
 
 app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # 모든 도메인 허용 (보안이 필요하면 특정 도메인만 허용)
+    allow_credentials=True,
+    allow_methods=["*"],  # 모든 HTTP 메서드 허용
+    allow_headers=["*"],  # 모든 헤더 허용
+)
 
 # 시리얼키 난수 생성
 def generate_serial_key(prefix: str) -> str:
